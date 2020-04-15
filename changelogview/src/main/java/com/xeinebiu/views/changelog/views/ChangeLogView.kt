@@ -69,7 +69,7 @@ class ChangeLogView(context: Context) : NestedScrollView(context) {
         val result: MutableList<ReleaseNote> = ArrayList()
         BufferedReader(StringReader(releaseNotes)).use { br ->
             var line: String? = br.readLineTrim()
-            while (line != null) {
+            while (line != null && (maxReleaseNotes <= 0 || maxReleaseNotes > result.size)) {
                 if (line.length > 1 && line[0] == '#') {
                     val releaseNoteTitle = line.substring(1).trim()
 
@@ -105,18 +105,16 @@ class ChangeLogView(context: Context) : NestedScrollView(context) {
      * @param releaseDividerLayoutId Layout Id to use as Divider
      * @param headerText Text to set on header
      * @param footerViewLayoutId Layout Id to use as Footer (optional)
-     * @param maxReleaseNotes Number of release notes to display (0 = all)
      * @author xeinebiu
      */
-    fun showReleaseNotes(
+    private fun showReleaseNotes(
         releaseNotes: List<ReleaseNote>,
         @LayoutRes headerLayoutId: Int,
         @LayoutRes releaseTitleLayoutId: Int,
         @LayoutRes releaseNoteLayoutId: Int,
         @LayoutRes releaseDividerLayoutId: Int,
         headerText: String,
-        @LayoutRes footerViewLayoutId: Int? = null,
-        maxReleaseNotes: Int = 0
+        @LayoutRes footerViewLayoutId: Int? = null
     ) {
         post {
             // clean old views
@@ -128,14 +126,7 @@ class ChangeLogView(context: Context) : NestedScrollView(context) {
             headerTitleView.text = formatText(headerText)
             container.addView(header)
 
-            val max = if (maxReleaseNotes <= 0 || maxReleaseNotes >= releaseNotes.size)
-                releaseNotes.size
-            else
-                maxReleaseNotes
-
-            for (i in 0 until max - 1) {
-                val rn = releaseNotes[i]
-
+            releaseNotes.forEach { rn ->
                 // create release container
                 val releaseView = inflate(R.layout.layout_release) as ViewGroup
 

@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         ChangeLogManager.Builder.with(this, getString(R.string.changelogs))
             .asDialog()
             .build()
-            .show()
+            .showOnce()
     }
 
     fun asView(view: View): Unit =
