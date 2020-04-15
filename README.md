@@ -1,11 +1,13 @@
 ## Android Change Logs View
 100% Customizable View to display your application Release Notes
 
+----
 #### Preview
 
 | ![](docs/showAlways.gif) | ![](docs/showAlwaysWithFooter.gif) |
 | ------------- | ------------- |
 
+----
 #### Installation
 Add it in your root build.gradle at the end of repositories:
 ````groovy
@@ -22,6 +24,8 @@ dependencies {
 }
 ````
 
+
+----
 #### Builder
 
 ##### Properties
@@ -44,9 +48,8 @@ dependencies {
 > withHeaderText(String) - Set a text to display on the header
 
 > withHeader(Int) - Set the [layoutId] for Header
-
 ----
-Start creating the ChangeLogManager using the Builder with default options
+Show Release Notes using default options
 ````kotlin
 ChangeLogManager.Builder.with(this, getString(R.string.changelogs))
                 .asDialog()
@@ -54,7 +57,36 @@ ChangeLogManager.Builder.with(this, getString(R.string.changelogs))
                 .show()
 ````
 
-##### Follow the application example for more Usage Examples
+
+----
+Use ```showOnce()``` to show the Release Notes only once per version
+````kotlin
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        ChangeLogManager.Builder.with(this, getString(R.string.changelogs))
+            .asDialog()
+            .build()
+            .showOnce()
+    }
+}
+````
+
+
+---
+#### Supported Formats
+> Plain Text
+````
+# 1.1.0
+Publish to Git
+Bug fixes
+# 1.0.0
+Hello world App
+````
+
+----
+##### Follow the demo application for more Usage Examples
 
 #### Author
 > xeinebiu

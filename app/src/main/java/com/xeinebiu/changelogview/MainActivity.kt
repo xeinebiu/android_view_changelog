@@ -17,6 +17,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        ChangeLogManager.Builder.with(this, getString(R.string.changelogs))
+            .asDialog()
+            .build()
+            .show()
     }
 
     fun asView(view: View): Unit =
