@@ -18,7 +18,7 @@ allprojects {
 Add the dependency
 ````groovy
 dependencies {
-    implementation 'com.github.xeinebiu:android_view_changelogs:Tag'
+    implementation 'com.github.xeinebiu:android_view_changelogs:1.0.2'
 }
 ````
 
