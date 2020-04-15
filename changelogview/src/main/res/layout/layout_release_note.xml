@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_mlarge"
+        android:orientation="horizontal"
+        android:gravity="start|center">
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="8dp"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/ic_circle_24dp"
+            android:tint="?android:textColorPrimary"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/layout_tv__release_note_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_xmedium"
+            tools:text="Bug Fixes and Improvements"
+            android:text="?android:textColorPrimary"
+            android:gravity="start|center"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

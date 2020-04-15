@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.AppCompatTextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/layout_tv_release_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:padding="@dimen/spacing_xmedium"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textStyle="bold"
+        tools:text="1.0.0"/>

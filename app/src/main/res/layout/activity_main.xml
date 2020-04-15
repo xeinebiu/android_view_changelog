@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
+
+    <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/activity_main_cb_include_footer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/include_footer"
+            android:padding="@dimen/spacing_xmedium"/>
+
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:textAppearance="@style/TextAppearance.AppCompat.Title"
+              android:text="@string/show_always"/>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal"
+                  android:weightSum="3">
+
+        <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/as_view"
+                android:onClick="asView"
+                android:layout_weight="1"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/as_bottom_sheet"
+                android:onClick="asBottomSheet"
+                android:layout_weight="1"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/as_dialog"
+                android:onClick="asDialog"
+                android:layout_weight="1"/>
+    </LinearLayout>
+
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:textAppearance="@style/TextAppearance.AppCompat.Title"
+              android:layout_marginTop="@dimen/spacing_mlarge"
+              android:text="@string/show_once"/>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal"
+                  android:weightSum="3">
+        <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/as_view"
+                android:onClick="asViewOnce"
+                android:layout_weight="1"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/as_bottom_sheet"
+                android:onClick="asBottomSheetOnce"
+                android:layout_weight="1"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/as_dialog"
+                android:onClick="asDialogOnce"
+                android:layout_weight="1"/>
+    </LinearLayout>
+
+
+    <LinearLayout android:id="@+id/activity_main_container"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

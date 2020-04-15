@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Change Log View</string>
+
+    <string name="changelogs" translatable="false">
+        # 1.1.0\n
+        Publish to Git\n
+        Bug fixes\n
+        # 1.0.0\n
+        Hello world App\n
+    </string>
+    <string name="show_always">Show Always</string>
+    <string name="as_view">As View</string>
+    <string name="as_bottom_sheet">As Bottom Sheet</string>
+    <string name="as_dialog">As Dialog</string>
+    <string name="show_once">Show Once</string>
+    <string name="close">Close</string>
+    <string name="read_more">Read More</string>
+    <string name="include_footer">Include Footer</string>
+    <string name="read_more_clicked">Read More Clicked</string>
+</resources>
