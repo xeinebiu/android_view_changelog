@@ -22,18 +22,11 @@ import com.xeinebiu.views.changelog.views.ChangeLogView
  */
 class ChangeLogManager constructor(
     private val activity: AppCompatActivity,
+    private val changeLogView: ChangeLogView,
     private val releaseNotes: String,
-    @LayoutRes private val headerLayoutId: Int,
-    @LayoutRes private val releaseTitleLayoutId: Int,
-    @LayoutRes private val releaseNoteLayoutId: Int,
-    @LayoutRes private val releaseDividerLayoutId: Int,
-    private val headerText: String,
     private val type: Type,
-    private val parentContainer: ViewGroup?,
-    @LayoutRes private val footerLayoutId: Int?,
-    private val maxReleaseNotes: Int
+    private val parentContainer: ViewGroup?
 ) {
-    private var changeLogView: View? = null
     private var dialog: ChangeLogDialog? = null
 
     /**
@@ -41,9 +34,8 @@ class ChangeLogManager constructor(
      * @author xeinebiu
      */
     fun close() {
-        val view = changeLogView
-        if (type == Type.View && view != null)
-            (view.parent as ViewGroup?)?.removeView(view)
+        if (type == Type.View)
+            (changeLogView.parent as ViewGroup?)?.removeView(changeLogView)
         else
             dialog?.close()
     }
@@ -53,25 +45,14 @@ class ChangeLogManager constructor(
      * @author xeinebiu
      */
     fun show(callback: ((View) -> Unit)? = null) {
-        val view = ChangeLogView(activity)
-        view.layoutParams =
+        changeLogView.layoutParams =
             ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        view.releaseNotesChangeListener = callback
-        view.showReleaseNotes(
-            releaseNotes,
-            headerLayoutId,
-            releaseTitleLayoutId,
-            releaseNoteLayoutId,
-            releaseDividerLayoutId,
-            headerText,
-            footerLayoutId,
-            maxReleaseNotes
-        )
-        changeLogView = view
+        changeLogView.releaseNotesChangeListener = callback
+        changeLogView.showReleaseNotes(releaseNotes)
         when (type) {
-            Type.View -> showOnContainer(view)
-            Type.BottomSheet -> dialog = showBottomsheetDialog(view)
-            Type.Dialog -> dialog = showDialog(view)
+            Type.View -> showOnContainer(changeLogView)
+            Type.BottomSheet -> dialog = showBottomsheetDialog(changeLogView)
+            Type.Dialog -> dialog = showDialog(changeLogView)
         }
     }
 
@@ -151,24 +132,16 @@ class ChangeLogManager constructor(
         private val activity: AppCompatActivity,
         private val releaseNotes: String
     ) {
-        @LayoutRes
-        private var headerLayoutId: Int = R.layout.layout_title
+        private val changeLogView = ChangeLogView(activity).apply {
+            headerLayoutId = R.layout.layout_title
+            releaseTitleLayoutId = R.layout.layout_release_title
+            releaseNoteLayoutId = R.layout.layout_release_note
+            releaseDividerLayoutId = R.layout.layout_release_divider
+            headerText = "Change Logs"
+        }
 
-        @LayoutRes
-        private var releaseTitleLayoutId = R.layout.layout_release_title
-
-        @LayoutRes
-        private var releaseNoteLayoutId = R.layout.layout_release_note
-
-        @LayoutRes
-        private var releaseDividerLayoutId = R.layout.layout_release_divider
-
-        @LayoutRes
-        private var footerLayoutId: Int? = null
         private var type = Type.Dialog
         private var parentContainer: ViewGroup? = null
-        private var headerText = "Change Logs"
-        private var maxReleaseNotes = 0
 
         /**
          * Display Release Notes on a [com.google.android.material.bottomsheet.BottomSheetDialogFragment]
@@ -203,7 +176,7 @@ class ChangeLogManager constructor(
          * @author xeinebiu
          */
         fun withLimit(limit: Int): Builder {
-            maxReleaseNotes = limit
+            changeLogView.maxReleaseNotes = limit
             return this
         }
 
@@ -212,7 +185,7 @@ class ChangeLogManager constructor(
          * @author xeinebiu
          */
         fun withFooter(@LayoutRes layoutId: Int): Builder {
-            footerLayoutId = layoutId
+            changeLogView.footerViewLayoutId = layoutId
             return this
         }
 
@@ -221,7 +194,7 @@ class ChangeLogManager constructor(
          * @author xeinebiu
          */
         fun withReleaseDivider(@LayoutRes layoutId: Int): Builder {
-            releaseDividerLayoutId = layoutId
+            changeLogView.releaseDividerLayoutId = layoutId
             return this
         }
 
@@ -230,7 +203,7 @@ class ChangeLogManager constructor(
          * @author xeinebiu
          */
         fun withReleaseNote(@LayoutRes layoutId: Int): Builder {
-            releaseNoteLayoutId = layoutId
+            changeLogView.releaseNoteLayoutId = layoutId
             return this
         }
 
@@ -239,7 +212,7 @@ class ChangeLogManager constructor(
          * @author xeinebiu
          */
         fun withReleaseTitle(@LayoutRes layoutId: Int): Builder {
-            releaseTitleLayoutId = layoutId
+            changeLogView.releaseTitleLayoutId = layoutId
             return this
         }
 
@@ -248,7 +221,7 @@ class ChangeLogManager constructor(
          * @author xeinebiu
          */
         fun withHeaderText(text: String): Builder {
-            headerText = text
+            changeLogView.headerText = text
             return this
         }
 
@@ -257,7 +230,7 @@ class ChangeLogManager constructor(
          * @author xeinebiu
          */
         fun withHeader(@LayoutRes layoutId: Int): Builder {
-            headerLayoutId = layoutId
+            changeLogView.headerLayoutId = layoutId
             return this
         }
 
@@ -268,16 +241,10 @@ class ChangeLogManager constructor(
         fun build(): ChangeLogManager =
             ChangeLogManager(
                 activity,
+                changeLogView,
                 releaseNotes,
-                headerLayoutId,
-                releaseTitleLayoutId,
-                releaseNoteLayoutId,
-                releaseDividerLayoutId,
-                headerText,
                 type,
-                parentContainer,
-                footerLayoutId,
-                maxReleaseNotes
+                parentContainer
             )
 
         companion object {

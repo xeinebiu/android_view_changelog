@@ -1,5 +1,7 @@
 ## Android Change Logs View
-100% Customizable View to display your application Release Notes
+100% Customizable & Performance View to display your application Release Notes.
+
+Memory efficient and Strong Performance on long Release Note's list.
 
 ----
 #### Preview

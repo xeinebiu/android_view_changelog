@@ -16,7 +16,7 @@
             android:tint="?android:textColorPrimary"/>
 
     <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/layout_tv__release_note_title"
+            android:id="@+id/layout_tv_release_note_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/spacing_xmedium"

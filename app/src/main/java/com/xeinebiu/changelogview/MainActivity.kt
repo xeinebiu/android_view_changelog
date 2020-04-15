@@ -8,16 +8,45 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
 import com.xeinebiu.views.changelog.ChangeLogManager
+import java.util.concurrent.ThreadLocalRandom
 
 class MainActivity : AppCompatActivity() {
 
     private var currentChangeLogManager: ChangeLogManager? = null
     private val includeFooterCheckBox by lazy { findViewById<AppCompatCheckBox>(R.id.activity_main_cb_include_footer) }
 
+    private val changeLogs: String by lazy {
+        val stringBuilder = StringBuilder()
+        var feature = "#v100"
+        val notes = arrayOf(
+            "Feature: Recycle Views to improve memory and performance",
+            "Feature: Support HTML Styling",
+            "Fix: App crashes on old devices",
+            "Improve: Memory Management",
+            "Improve: User Experience",
+            "Fix: Camera failed to open",
+            "Fix: Scan of QR",
+            "Improve: Image quality",
+            "Improve: Barcode Scanner"
+        )
+
+        for (i in 99 downTo 1) {
+            stringBuilder.appendln(feature)
+
+            val notesCount = ThreadLocalRandom.current().nextInt(1, 10)
+            for (j in 0..notesCount)
+                stringBuilder.appendln(notes[ThreadLocalRandom.current().nextInt(0, notes.size)])
+
+            feature = "#v$i"
+        }
+
+        stringBuilder.toString()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        ChangeLogManager.Builder.with(this, getString(R.string.changelogs))
+        ChangeLogManager.Builder.with(this, changeLogs)
             .asDialog()
             .build()
             .showOnce()
@@ -43,8 +72,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun createBuilder(): ChangeLogManager.Builder {
         val builder = ChangeLogManager.Builder
-            .with(this, getString(R.string.changelogs))
-            .withLimit(1)
+            .with(this, changeLogs)
+            .withLimit(0)
 
         if (includeFooterCheckBox.isChecked)
             builder.withFooter(R.layout.layout_footer)
