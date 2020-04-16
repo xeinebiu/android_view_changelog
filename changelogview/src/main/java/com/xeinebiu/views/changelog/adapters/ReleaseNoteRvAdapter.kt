@@ -27,9 +27,9 @@ class ReleaseNoteRvAdapter(
         notesRecycleViewPool.add(it)
     }
 
-    private val requireNoteView: () -> View = {
+    private val requireNoteView: (ViewGroup) -> View = { parent ->
         if (notesRecycleViewPool.isEmpty())
-            layoutInflater.inflate(releaseNoteLayoutId, null)
+            layoutInflater.inflate(releaseNoteLayoutId, parent, false)
         else
             notesRecycleViewPool.remove()
     }
@@ -62,7 +62,7 @@ class ReleaseNoteRvAdapter(
 
 class ReleaseNoteViewHolder(
     itemView: View,
-    private val requireNoteView: () -> View,
+    private val requireNoteView: (ViewGroup) -> View,
     private val recycleNoteView: (View) -> Unit
 ) :
     RecyclerView.ViewHolder(itemView) {
@@ -89,7 +89,7 @@ class ReleaseNoteViewHolder(
             } else if (diff < 0) {
                 val absDiff = abs(diff)
                 for (i in 0 until absDiff) {
-                    val view = requireNoteView()
+                    val view = requireNoteView(viewGroup)
                     notesViews.add(view)
                     viewGroup.addView(view, viewGroup.childCount - 1)
                 }
