@@ -82,6 +82,7 @@ class MainActivity : AppCompatActivity() {
 ````
 # 1.1.0
 Publish to Git
+Support Streams & Static String`s
 Bug fixes
 # 1.0.0
 Hello world App

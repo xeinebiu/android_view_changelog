@@ -13,6 +13,7 @@ import com.xeinebiu.views.changelog.dialogs.ChangeLogBottomSheetDialogFragment
 import com.xeinebiu.views.changelog.dialogs.ChangeLogDialog
 import com.xeinebiu.views.changelog.dialogs.ChangeLogDialogFragment
 import com.xeinebiu.views.changelog.views.ChangeLogView
+import java.io.InputStream
 
 
 /**
@@ -23,7 +24,7 @@ import com.xeinebiu.views.changelog.views.ChangeLogView
 class ChangeLogManager constructor(
     private val activity: AppCompatActivity,
     private val changeLogView: ChangeLogView,
-    private val releaseNotes: String,
+    private val releaseNotes: InputStream,
     private val type: Type,
     private val parentContainer: ViewGroup?
 ) {
@@ -46,7 +47,10 @@ class ChangeLogManager constructor(
      */
     fun show(callback: ((View) -> Unit)? = null) {
         changeLogView.layoutParams =
-            ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
         changeLogView.releaseNotesChangeListener = callback
         changeLogView.showReleaseNotes(releaseNotes)
         when (type) {
@@ -84,7 +88,11 @@ class ChangeLogManager constructor(
         return showDialog(dialog, dialog, view)
     }
 
-    private fun showDialog(changeLogDialog: ChangeLogDialog, dialog: DialogFragment, view: View): ChangeLogDialog {
+    private fun showDialog(
+        changeLogDialog: ChangeLogDialog,
+        dialog: DialogFragment,
+        view: View
+    ): ChangeLogDialog {
         changeLogDialog.init(view)
         dialog.show(activity.supportFragmentManager, null)
         return changeLogDialog
@@ -130,7 +138,7 @@ class ChangeLogManager constructor(
 
     class Builder constructor(
         private val activity: AppCompatActivity,
-        private val releaseNotes: String
+        private val releaseNotes: InputStream
     ) {
         private val changeLogView = ChangeLogView(activity).apply {
             headerLayoutId = R.layout.layout_title
@@ -253,6 +261,9 @@ class ChangeLogManager constructor(
              * @author xeinebiu
              */
             fun with(activity: AppCompatActivity, releaseNotes: String): Builder =
+                Builder(activity, releaseNotes.byteInputStream())
+
+            fun with(activity: AppCompatActivity, releaseNotes: InputStream): Builder =
                 Builder(activity, releaseNotes)
         }
     }

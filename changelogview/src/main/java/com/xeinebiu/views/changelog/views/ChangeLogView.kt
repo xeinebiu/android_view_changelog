@@ -15,7 +15,7 @@ import com.xeinebiu.views.changelog.R
 import com.xeinebiu.views.changelog.adapters.ReleaseNoteRvAdapter
 import com.xeinebiu.views.changelog.models.ReleaseNote
 import java.io.BufferedReader
-import java.io.StringReader
+import java.io.InputStream
 
 private fun BufferedReader.readLineTrim() = this.readLine()?.trim()
 
@@ -58,11 +58,14 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
      * @param releaseNotes Release notes to display
      * @author xeinebiu
      */
-    fun showReleaseNotes(releaseNotes: String) {
-        val result: MutableList<ReleaseNote> = ArrayList()
-        BufferedReader(StringReader(releaseNotes)).use { br ->
+    fun showReleaseNotes(releaseNotes: InputStream) {
+        val result = mutableListOf<ReleaseNote>()
+        releaseNotes.bufferedReader().use { br ->
+            if (result.size >= maxReleaseNotes)
+                return@use
+
             var line: String? = br.readLineTrim()
-            while (line != null && (maxReleaseNotes <= 0 || maxReleaseNotes > result.size)) {
+            while (!line.isNullOrEmpty()) {
                 if (line.length > 1 && line[0] == '#') {
                     val releaseNoteTitle = line.substring(1).trim()
 
