@@ -61,11 +61,11 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
     fun showReleaseNotes(releaseNotes: InputStream) {
         val result = mutableListOf<ReleaseNote>()
         releaseNotes.bufferedReader().use { br ->
-            if (result.size >= maxReleaseNotes && maxReleaseNotes != -1)
-                return@use
-
             var line: String? = br.readLineTrim()
-            while (!line.isNullOrEmpty()) {
+            while (line != null) {
+                if (result.size >= maxReleaseNotes && maxReleaseNotes != -1)
+                    return@use
+
                 if (line.length > 1 && line[0] == '#') {
                     val releaseNoteTitle = line.substring(1).trim()
 

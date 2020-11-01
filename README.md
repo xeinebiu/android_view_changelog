@@ -80,6 +80,10 @@ class MainActivity : AppCompatActivity() {
 #### Supported Formats
 > Plain Text
 ````
+# 1.1.2
+# Fix limitation
+# 1.1.1
+Logs are not shown
 # 1.1.0
 Publish to Git
 Support Streams & Static String`s
