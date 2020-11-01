@@ -41,7 +41,7 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
     @LayoutRes
     var footerViewLayoutId: Int = 0
 
-    var maxReleaseNotes: Int = 0
+    var maxReleaseNotes: Int = -1
 
     /**
      * Event emitter to inform when [ReleaseNote] collection has been changed
@@ -61,7 +61,7 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
     fun showReleaseNotes(releaseNotes: InputStream) {
         val result = mutableListOf<ReleaseNote>()
         releaseNotes.bufferedReader().use { br ->
-            if (result.size >= maxReleaseNotes)
+            if (result.size >= maxReleaseNotes && maxReleaseNotes != -1)
                 return@use
 
             var line: String? = br.readLineTrim()
