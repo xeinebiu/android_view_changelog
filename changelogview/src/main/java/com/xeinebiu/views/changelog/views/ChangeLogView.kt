@@ -43,12 +43,6 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
 
     var maxReleaseNotes: Int = -1
 
-    /**
-     * Event emitter to inform when [ReleaseNote] collection has been changed
-     * @author xeinebiu
-     */
-    var releaseNotesChangeListener: ((View) -> Unit)? = null
-
     init {
         orientation = VERTICAL
     }
@@ -111,10 +105,6 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
             if (footerViewLayoutId != 0) {
                 val footerView = inflate(footerViewLayoutId)
                 addView(footerView)
-            }
-
-            post {
-                releaseNotesChangeListener?.invoke(this)
             }
         }
     }

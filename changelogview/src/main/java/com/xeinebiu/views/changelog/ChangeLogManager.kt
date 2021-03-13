@@ -45,13 +45,15 @@ class ChangeLogManager constructor(
      * Show Release Notes unconditionally
      * @author xeinebiu
      */
-    fun show(callback: ((View) -> Unit)? = null) {
-        changeLogView.releaseNotesChangeListener = callback
+    fun show() {
         changeLogView.showReleaseNotes(releaseNotes)
-        when (type) {
-            Type.View -> showOnContainer(changeLogView)
-            Type.BottomSheet -> dialog = showBottomsheetDialog(changeLogView)
-            Type.Dialog -> dialog = showDialog(changeLogView)
+
+        activity.runOnUiThread {
+            when (type) {
+                Type.View -> showOnContainer(changeLogView)
+                Type.BottomSheet -> dialog = showBottomsheetDialog(changeLogView)
+                Type.Dialog -> dialog = showDialog(changeLogView)
+            }
         }
     }
 
@@ -59,12 +61,13 @@ class ChangeLogManager constructor(
      * Show Release Notes only if not shown yet for current application version
      * @author xeinebiu
      */
-    fun showOnce(callback: ((View) -> Unit)? = null) {
+    fun showOnce() {
         val appVersionCode = getAppVersionCode()
         val lastAppVersionCode = getLastAppVersionCode()
+
         if (appVersionCode > lastAppVersionCode) {
             setLastAppVersionCode(appVersionCode)
-            show(callback)
+            show()
         }
     }
 

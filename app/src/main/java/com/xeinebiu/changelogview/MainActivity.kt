@@ -7,7 +7,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.lifecycle.lifecycleScope
 import com.xeinebiu.views.changelog.ChangeLogManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.ThreadLocalRandom
 
 class MainActivity : AppCompatActivity() {
@@ -47,13 +50,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        ChangeLogManager
-            .Builder(this@MainActivity) {
-                changeLogs.byteInputStream()
-            }
-            .asDialog()
-            .build()
-            .show()
+        lifecycleScope.launch(Dispatchers.Default) {
+            ChangeLogManager
+                .Builder(this@MainActivity) {
+                    changeLogs.byteInputStream()
+                }
+                .asDialog()
+                .build()
+                .showOnce()
+        }
+
     }
 
     fun asView(view: View): Unit =
@@ -121,9 +127,9 @@ class MainActivity : AppCompatActivity() {
         currentChangeLogManager = changeLogManager
 
         if (once)
-            changeLogManager.showOnce { releaseShown(it) }
+            changeLogManager.showOnce()
         else
-            changeLogManager.show { releaseShown(it) }
+            changeLogManager.show()
     }
 
     private fun releaseShown(view: View?) {
