@@ -58,12 +58,13 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
      * @param releaseNotes Release notes to display
      * @author xeinebiu
      */
-    fun showReleaseNotes(releaseNotes: InputStream) {
+    fun showReleaseNotes(releaseNotes: () -> InputStream) {
         val result = mutableListOf<ReleaseNote>()
-        releaseNotes.bufferedReader().use { br ->
+
+        releaseNotes().bufferedReader().use { br ->
             var line: String? = br.readLineTrim()
             while (line != null) {
-                if (result.size >= maxReleaseNotes && maxReleaseNotes != -1)
+                if (result.size >= maxReleaseNotes && maxReleaseNotes > 0)
                     return@use
 
                 if (line.length > 1 && line[0] == '#') {
@@ -81,6 +82,7 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
                     line = br.readLineTrim()
             }
         }
+
         showReleaseNotes(result)
     }
 

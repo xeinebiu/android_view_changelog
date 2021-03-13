@@ -46,7 +46,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        ChangeLogManager.Builder.with(this, changeLogs)
+
+        ChangeLogManager
+            .Builder(this) {
+                changeLogs.byteInputStream()
+            }
             .asDialog()
             .build()
             .showOnce()
@@ -71,8 +75,10 @@ class MainActivity : AppCompatActivity() {
         showAsDialog(true)
 
     private fun createBuilder(): ChangeLogManager.Builder {
-        val builder = ChangeLogManager.Builder
-            .with(this, changeLogs)
+        val builder = ChangeLogManager
+            .Builder(this) {
+                changeLogs.byteInputStream()
+            }
             .withLimit(0)
 
         if (includeFooterCheckBox.isChecked)

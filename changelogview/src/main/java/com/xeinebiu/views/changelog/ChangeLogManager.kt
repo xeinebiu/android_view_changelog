@@ -24,7 +24,7 @@ import java.io.InputStream
 class ChangeLogManager constructor(
     private val activity: AppCompatActivity,
     private val changeLogView: ChangeLogView,
-    private val releaseNotes: InputStream,
+    private val releaseNotes: () -> InputStream,
     private val type: Type,
     private val parentContainer: ViewGroup?
 ) {
@@ -138,7 +138,7 @@ class ChangeLogManager constructor(
 
     class Builder constructor(
         private val activity: AppCompatActivity,
-        private val releaseNotes: InputStream
+        private val releaseNotes: () -> InputStream
     ) {
         private val changeLogView = ChangeLogView(activity).apply {
             headerLayoutId = R.layout.layout_title
@@ -155,25 +155,23 @@ class ChangeLogManager constructor(
          * Display Release Notes on a [com.google.android.material.bottomsheet.BottomSheetDialogFragment]
          * @author xeinebiu
          */
-        fun asBottomSheet(): Builder {
+        fun asBottomSheet() = apply {
             type = Type.BottomSheet
-            return this
         }
 
         /**
          * Display Release Notes on a [DialogFragment]
          * @author xeinebiu
          */
-        fun asDialog(): Builder {
+        fun asDialog() = apply {
             type = Type.Dialog
-            return this
         }
 
         /**
          * Display Release Notes on a [ViewGroup]
          * @author xeinebiu
          */
-        fun asView(container: ViewGroup): Builder {
+        fun asView(container: ViewGroup) = apply {
             parentContainer = container
             type = Type.View
             return this
@@ -183,63 +181,56 @@ class ChangeLogManager constructor(
          * Limit amount of Release notes to show
          * @author xeinebiu
          */
-        fun withLimit(limit: Int): Builder {
+        fun withLimit(limit: Int) = apply {
             changeLogView.maxReleaseNotes = limit
-            return this
         }
 
         /**
          * Display [View] as Footer
          * @author xeinebiu
          */
-        fun withFooter(@LayoutRes layoutId: Int): Builder {
+        fun withFooter(@LayoutRes layoutId: Int) = apply {
             changeLogView.footerViewLayoutId = layoutId
-            return this
         }
 
         /**
          * Set the [layoutId] to use as divider between Release's
          * @author xeinebiu
          */
-        fun withReleaseDivider(@LayoutRes layoutId: Int): Builder {
+        fun withReleaseDivider(@LayoutRes layoutId: Int) = apply {
             changeLogView.releaseDividerLayoutId = layoutId
-            return this
         }
 
         /**
          * Set the [layoutId] to use for Release Note
          * @author xeinebiu
          */
-        fun withReleaseNote(@LayoutRes layoutId: Int): Builder {
+        fun withReleaseNote(@LayoutRes layoutId: Int) = apply {
             changeLogView.releaseNoteLayoutId = layoutId
-            return this
         }
 
         /**
          * Set the [layoutId] to use for Release Title
          * @author xeinebiu
          */
-        fun withReleaseTitle(@LayoutRes layoutId: Int): Builder {
+        fun withReleaseTitle(@LayoutRes layoutId: Int) = apply {
             changeLogView.releaseTitleLayoutId = layoutId
-            return this
         }
 
         /**
          * Set text to display on the header
          * @author xeinebiu
          */
-        fun withHeaderText(text: String): Builder {
+        fun withHeaderText(text: String) = apply {
             changeLogView.headerText = text
-            return this
         }
 
         /**
          * Set the [layoutId] for Header
          * @author xeinebiu
          */
-        fun withHeader(@LayoutRes layoutId: Int): Builder {
+        fun withHeader(@LayoutRes layoutId: Int) = apply {
             changeLogView.headerLayoutId = layoutId
-            return this
         }
 
         /**
@@ -254,17 +245,5 @@ class ChangeLogManager constructor(
                 type,
                 parentContainer
             )
-
-        companion object {
-            /**
-             * Start a builder using an [AppCompatActivity] and [releaseNotes]
-             * @author xeinebiu
-             */
-            fun with(activity: AppCompatActivity, releaseNotes: String): Builder =
-                Builder(activity, releaseNotes.byteInputStream())
-
-            fun with(activity: AppCompatActivity, releaseNotes: InputStream): Builder =
-                Builder(activity, releaseNotes)
-        }
     }
 }

@@ -53,7 +53,7 @@ dependencies {
 ----
 Show Release Notes using default options
 ````kotlin
-ChangeLogManager.Builder.with(this, getString(R.string.changelogs))
+ChangeLogManager.Builder(context, releaseNotesInputStream)
                 .asDialog()
                 .build()
                 .show()
@@ -80,8 +80,11 @@ class MainActivity : AppCompatActivity() {
 #### Supported Formats
 > Plain Text
 ````
+# 1.2.0
+Create the stream only when needed
+Code quality
 # 1.1.2
-# Fix limitation
+Fix limitation
 # 1.1.1
 Logs are not shown
 # 1.1.0
