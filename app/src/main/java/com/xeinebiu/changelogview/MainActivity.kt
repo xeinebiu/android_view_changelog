@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
             val notesCount = ThreadLocalRandom.current().nextInt(1, 10)
             for (j in 0..notesCount)
-                stringBuilder.appendln(notes[ThreadLocalRandom.current().nextInt(0, notes.size)])
+                stringBuilder.appendLine(notes[ThreadLocalRandom.current().nextInt(0, notes.size)])
 
             feature = "#v$i"
         }
@@ -48,12 +48,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         ChangeLogManager
-            .Builder(this) {
+            .Builder(this@MainActivity) {
                 changeLogs.byteInputStream()
             }
             .asDialog()
             .build()
-            .showOnce()
+            .show()
     }
 
     fun asView(view: View): Unit =
@@ -119,6 +119,7 @@ class MainActivity : AppCompatActivity() {
     private fun showReleaseNotes(changeLogManager: ChangeLogManager, once: Boolean) {
         currentChangeLogManager?.close()
         currentChangeLogManager = changeLogManager
+
         if (once)
             changeLogManager.showOnce { releaseShown(it) }
         else

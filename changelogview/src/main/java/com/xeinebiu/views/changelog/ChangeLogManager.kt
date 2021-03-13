@@ -46,11 +46,6 @@ class ChangeLogManager constructor(
      * @author xeinebiu
      */
     fun show(callback: ((View) -> Unit)? = null) {
-        changeLogView.layoutParams =
-            ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
         changeLogView.releaseNotesChangeListener = callback
         changeLogView.showReleaseNotes(releaseNotes)
         when (type) {
@@ -146,6 +141,12 @@ class ChangeLogManager constructor(
             releaseNoteLayoutId = R.layout.layout_release_note
             releaseDividerLayoutId = R.layout.layout_release_divider
             headerText = "Change Logs"
+        }.also {
+            it.layoutParams =
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
         }
 
         private var type = Type.Dialog
