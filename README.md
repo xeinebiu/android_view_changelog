@@ -59,11 +59,12 @@ Use ```showOnce()``` to show the Release Notes only once per version
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+	
         setContentView(R.layout.activity_main)
-        ChangeLogManager.Builder.with(this, getString(R.string.changelogs))
-            .asDialog()
-            .build()
-            .showOnce()
+	
+	ChangeLogManager.Builder(context, type) { changeLogsApi.get() }
+                .build()
+                .showOnce()
     }
 }
 ````
@@ -73,6 +74,13 @@ class MainActivity : AppCompatActivity() {
 #### Supported Formats
 > Plain Text
 ````
+# 2.0.0
+Update dependencies
+Support coroutines
+Code quality improvements
+Replace display type from enum to sealed class
+Use default behavior on bottom sheet
+
 # 1.2.0
 Create the stream only when needed
 Code quality
