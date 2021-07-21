@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.xeinebiu.views.changelog.R
 import com.xeinebiu.views.changelog.adapters.ReleaseNoteRvAdapter
 import com.xeinebiu.views.changelog.models.ReleaseNote
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import java.io.BufferedReader
 import java.io.InputStream
 
@@ -24,6 +27,7 @@ private fun BufferedReader.readLineTrim() = this.readLine()?.trim()
  * @author xeinebiu
  */
 class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
+
     @LayoutRes
     var headerLayoutId: Int = 0
 
@@ -52,29 +56,37 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
      * @param releaseNotes Release notes to display
      * @author xeinebiu
      */
-    fun showReleaseNotes(releaseNotes: () -> InputStream) {
-        val result = mutableListOf<ReleaseNote>()
+    suspend fun showReleaseNotes(releaseNotes: suspend () -> InputStream) {
+        val result = withContext(Dispatchers.IO) {
+            val result = mutableListOf<ReleaseNote>()
 
-        releaseNotes().bufferedReader().use { br ->
-            var line: String? = br.readLineTrim()
-            while (line != null) {
-                if (result.size >= maxReleaseNotes && maxReleaseNotes > 0)
-                    return@use
+            releaseNotes().bufferedReader().use { br ->
+                var line: String? = br.readLineTrim()
 
-                if (line.length > 1 && line[0] == '#') {
-                    val releaseNoteTitle = line.substring(1).trim()
+                while (line != null) {
+                    yield()
 
-                    val notes = ArrayList<String>()
-                    line = br.readLineTrim()
-                    while (line != null && line.isNotEmpty() && line[0] != '#') {
-                        notes.add(line)
+                    if (result.size >= maxReleaseNotes && maxReleaseNotes > 0) return@use
+
+                    if (line.length > 1 && line[0] == '#') {
+                        val releaseNoteTitle = line.substring(1).trim()
+
+                        val notes = ArrayList<String>()
+                        line = br.readLineTrim()
+
+                        while (line != null && line.isNotEmpty() && line[0] != '#') {
+                            notes.add(line)
+                            line = br.readLineTrim()
+                        }
+
+                        result.add(ReleaseNote(releaseNoteTitle, notes))
+                    } else {
                         line = br.readLineTrim()
                     }
-
-                    result.add(ReleaseNote(releaseNoteTitle, notes))
-                } else
-                    line = br.readLineTrim()
+                }
             }
+
+            result
         }
 
         showReleaseNotes(result)
@@ -85,8 +97,8 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
      * @param releaseNotes Release notes to display
      * @author xeinebiu
      */
-    private fun showReleaseNotes(releaseNotes: List<ReleaseNote>) {
-        post {
+    private suspend fun showReleaseNotes(releaseNotes: List<ReleaseNote>) {
+        withContext(Dispatchers.Main) {
             // clean old views
             clearReleaseNotes()
 
@@ -118,14 +130,19 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
         releaseNotes: List<ReleaseNote>
     ) {
         val adapter = ReleaseNoteRvAdapter(
-            context,
-            releaseNotes,
-            releaseTitleLayoutId,
-            releaseNoteLayoutId,
-            releaseDividerLayoutId
+            context = context,
+            releaseNotes = releaseNotes,
+            releaseTitleLayoutId = releaseTitleLayoutId,
+            releaseNoteLayoutId = releaseNoteLayoutId,
+            releaseDividerLayoutId = releaseDividerLayoutId
         )
-        recyclerView.layoutManager =
-            LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+
+        recyclerView.layoutManager = LinearLayoutManager(
+            context,
+            RecyclerView.VERTICAL,
+            false
+        )
+
         recyclerView.adapter = adapter
     }
 
@@ -146,8 +163,7 @@ class ChangeLogView(context: Context) : LinearLayoutCompat(context) {
      * Remove all [ReleaseNote]
      * @author xeinebiu
      */
-    private fun clearReleaseNotes(): Unit =
-        removeAllViews()
+    private fun clearReleaseNotes(): Unit = removeAllViews()
 
     /**
      * Format given text from HTML

@@ -9,7 +9,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.xeinebiu.views.changelog.R
 import com.xeinebiu.views.changelog.models.ReleaseNote
-import java.util.*
+import java.util.LinkedList
+import java.util.Queue
 import kotlin.math.abs
 
 class ReleaseNoteRvAdapter(
@@ -28,10 +29,11 @@ class ReleaseNoteRvAdapter(
     }
 
     private val requireNoteView: (ViewGroup) -> View = { parent ->
-        if (notesRecycleViewPool.isEmpty())
-            layoutInflater.inflate(releaseNoteLayoutId, parent, false)
-        else
-            notesRecycleViewPool.remove()
+        if (notesRecycleViewPool.isEmpty()) layoutInflater.inflate(
+            releaseNoteLayoutId,
+            parent,
+            false
+        ) else notesRecycleViewPool.remove()
     }
 
     private val layoutInflater by lazy { LayoutInflater.from(context) }
@@ -40,7 +42,8 @@ class ReleaseNoteRvAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReleaseNoteViewHolder {
         // create release container
-        val releaseView = layoutInflater.inflate(R.layout.layout_release, parent, false) as ViewGroup
+        val releaseView =
+            layoutInflater.inflate(R.layout.layout_release, parent, false) as ViewGroup
 
         // Release title
         val titleView = layoutInflater.inflate(releaseTitleLayoutId, parent, false)
@@ -56,6 +59,7 @@ class ReleaseNoteRvAdapter(
 
     override fun onBindViewHolder(holder: ReleaseNoteViewHolder, position: Int) {
         val releaseNote = releaseNotes[position]
+
         holder.releaseNote = releaseNote
     }
 }
@@ -64,20 +68,21 @@ class ReleaseNoteViewHolder(
     itemView: View,
     private val requireNoteView: (ViewGroup) -> View,
     private val recycleNoteView: (View) -> Unit
-) :
-    RecyclerView.ViewHolder(itemView) {
+) : RecyclerView.ViewHolder(itemView) {
 
     private val notesViews: Queue<View> = LinkedList()
-    private val releaseTitleView: AppCompatTextView = itemView.findViewById(R.id.layout_tv_release_title)
 
+    private val releaseTitleView: AppCompatTextView =
+        itemView.findViewById(R.id.layout_tv_release_title)
 
     var releaseNote: ReleaseNote? = null
         set(value) {
             field = value
-            releaseTitleView.text = value?.title ?: ""
+
+            releaseTitleView.text = value?.title.orEmpty()
 
             val viewGroup = itemView as ViewGroup
-            val notes = value?.notes ?: emptyList()
+            val notes = value?.notes.orEmpty()
             val diff = notesViews.size - notes.size
 
             if (diff > 0) {
@@ -95,13 +100,13 @@ class ReleaseNoteViewHolder(
                 }
             }
 
-            var index = 0
-            notesViews.forEach {
+            notesViews.forEachIndexed { index, view ->
                 val note = notes[index]
-                val noteTextView: AppCompatTextView = it.findViewById(R.id.layout_tv_release_note_title)
-                noteTextView.text = note
 
-                index++
+                val noteTextView: AppCompatTextView =
+                    view.findViewById(R.id.layout_tv_release_note_title)
+
+                noteTextView.text = note
             }
         }
 }

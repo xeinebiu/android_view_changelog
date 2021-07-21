@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
  * @author xeinebiu
  */
 class ChangeLogDialogFragment : DialogFragment(), ChangeLogDialog {
+
     override var childView: View? = null
 
     /**
@@ -19,19 +20,25 @@ class ChangeLogDialogFragment : DialogFragment(), ChangeLogDialog {
      */
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
     }
 
     /**
      * Return passed view as content for Dialog
      * @author xeinebiu
      */
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        childView
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = childView
 
     /**
      * Close [DialogFragment]
      */
-    override fun close(): Unit =
-        dismiss()
+    override fun close(): Unit = dismiss()
 }

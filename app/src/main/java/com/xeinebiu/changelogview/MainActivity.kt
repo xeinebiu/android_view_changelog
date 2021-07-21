@@ -16,10 +16,14 @@ import java.util.concurrent.ThreadLocalRandom
 class MainActivity : AppCompatActivity() {
 
     private var currentChangeLogManager: ChangeLogManager? = null
-    private val includeFooterCheckBox by lazy { findViewById<AppCompatCheckBox>(R.id.activity_main_cb_include_footer) }
+
+    private val includeFooterCheckBox by lazy {
+        findViewById<AppCompatCheckBox>(R.id.activity_main_cb_include_footer)
+    }
 
     private val changeLogs: String by lazy {
         val stringBuilder = StringBuilder()
+
         var feature = "#v100"
         val notes = arrayOf(
             "Feature: Recycle Views to improve memory and performance",
@@ -48,88 +52,95 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
         lifecycleScope.launch(Dispatchers.Default) {
             ChangeLogManager
-                .Builder(this@MainActivity) {
+                .Builder(
+                    context = this@MainActivity,
+                    type = ChangeLogManager.Type.Dialog(supportFragmentManager)
+                ) {
                     changeLogs.byteInputStream()
                 }
-                .asDialog()
                 .build()
                 .showOnce()
         }
-
     }
 
-    fun asView(view: View): Unit =
-        showAsView()
+    fun asView(view: View) {
+        lifecycleScope.launch { showAsView() }
+    }
 
-    fun asBottomSheet(view: View): Unit =
-        showAsBottomSheet()
+    fun asBottomSheet(view: View) {
+        lifecycleScope.launch { showAsBottomSheet() }
+    }
 
-    fun asDialog(view: View): Unit =
-        showAsDialog()
+    fun asDialog(view: View) {
+        lifecycleScope.launch { showAsDialog() }
+    }
 
-    fun asViewOnce(view: View): Unit =
-        showAsView(true)
+    fun asViewOnce(view: View) {
+        lifecycleScope.launch { showAsView(true) }
+    }
 
-    fun asBottomSheetOnce(view: View): Unit =
-        showAsBottomSheet(true)
+    fun asBottomSheetOnce(view: View) {
+        lifecycleScope.launch { showAsBottomSheet(true) }
+    }
 
-    fun asDialogOnce(view: View): Unit =
-        showAsDialog(true)
+    fun asDialogOnce(view: View) {
+        lifecycleScope.launch { showAsDialog(true) }
+    }
 
-    private fun createBuilder(): ChangeLogManager.Builder {
+    private fun createBuilder(type: ChangeLogManager.Type): ChangeLogManager.Builder {
         val builder = ChangeLogManager
-            .Builder(this) {
+            .Builder(this, type) {
                 changeLogs.byteInputStream()
             }
             .withLimit(0)
 
-        if (includeFooterCheckBox.isChecked)
-            builder.withFooter(R.layout.layout_footer)
+        if (includeFooterCheckBox.isChecked) builder.withFooter(R.layout.layout_footer)
 
         return builder
     }
 
-    private fun showAsView(once: Boolean = false) {
+    private suspend fun showAsView(once: Boolean = false) {
         val container: ViewGroup = findViewById(R.id.activity_main_container)
         container.removeAllViews()
-        createBuilder()
-            .asView(container)
+
+        createBuilder(ChangeLogManager.Type.View(container))
             .build()
-            .let {
+            .also {
                 showReleaseNotes(it, once)
             }
     }
 
-    private fun showAsBottomSheet(once: Boolean = false) {
-        createBuilder()
-            .asBottomSheet()
+    private suspend fun showAsBottomSheet(once: Boolean = false) {
+        createBuilder(ChangeLogManager.Type.BottomSheet(supportFragmentManager))
             .build()
-            .let {
+            .also {
                 showReleaseNotes(it, once)
             }
     }
 
-    private fun showAsDialog(once: Boolean = false) {
-        createBuilder()
-            .asDialog()
+    private suspend fun showAsDialog(once: Boolean = false) {
+        createBuilder(ChangeLogManager.Type.Dialog(supportFragmentManager))
             .build()
-            .let {
+            .also {
                 showReleaseNotes(it, once)
             }
     }
 
-    private fun showReleaseNotes(changeLogManager: ChangeLogManager, once: Boolean) {
+    private suspend fun showReleaseNotes(
+        changeLogManager: ChangeLogManager,
+        once: Boolean
+    ) {
         currentChangeLogManager?.close()
+
         currentChangeLogManager = changeLogManager
 
-        if (once)
-            changeLogManager.showOnce()
-        else
-            changeLogManager.show()
+        if (once) changeLogManager.showOnce()
+        else changeLogManager.show()
     }
 
     private fun releaseShown(view: View?) {

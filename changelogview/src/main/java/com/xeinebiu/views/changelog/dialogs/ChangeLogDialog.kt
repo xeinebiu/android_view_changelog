@@ -7,6 +7,7 @@ import android.view.View
  * @author xeinebiu
  */
 interface ChangeLogDialog {
+
     /**
      * [View] to display as Dialog Content
      */
@@ -23,8 +24,10 @@ interface ChangeLogDialog {
      * @author xeinebiu
      */
     fun init(view: View) {
-        if (childView != null)
-            throw Error("ChangeLogDialog is already initialized once, consider creating another dialog for a different view!")
+        if (childView != null) throw Exception(
+            "ChangeLogDialog is already initialized once, consider creating another dialog for a different view!"
+        )
+
         childView = view
     }
 }

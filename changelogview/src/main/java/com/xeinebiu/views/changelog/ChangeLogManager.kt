@@ -7,27 +7,28 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
+import androidx.core.content.edit
+import androidx.fragment.app.FragmentManager
 import com.xeinebiu.views.changelog.dialogs.ChangeLogBottomSheetDialogFragment
 import com.xeinebiu.views.changelog.dialogs.ChangeLogDialog
 import com.xeinebiu.views.changelog.dialogs.ChangeLogDialogFragment
 import com.xeinebiu.views.changelog.views.ChangeLogView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.InputStream
-
 
 /**
  * <p>Manager for the Change Logs</p>
  * <p>Manage how the Change Logs are shown</p>
  * @author xeinebiu
  */
-class ChangeLogManager constructor(
-    private val activity: AppCompatActivity,
+class ChangeLogManager(
     private val changeLogView: ChangeLogView,
-    private val releaseNotes: () -> InputStream,
+    private val context: Context,
+    private val releaseNotes: suspend () -> InputStream,
     private val type: Type,
-    private val parentContainer: ViewGroup?
 ) {
+
     private var dialog: ChangeLogDialog? = null
 
     /**
@@ -35,24 +36,37 @@ class ChangeLogManager constructor(
      * @author xeinebiu
      */
     fun close() {
-        if (type == Type.View)
-            (changeLogView.parent as ViewGroup?)?.removeView(changeLogView)
-        else
-            dialog?.close()
+        if (type is Type.View) (changeLogView.parent as ViewGroup?)?.removeView(changeLogView)
+        else dialog?.close()
     }
 
     /**
      * Show Release Notes unconditionally
      * @author xeinebiu
      */
-    fun show() {
+    suspend fun show() {
         changeLogView.showReleaseNotes(releaseNotes)
 
-        activity.runOnUiThread {
+        withContext(Dispatchers.Main) {
             when (type) {
-                Type.View -> showOnContainer(changeLogView)
-                Type.BottomSheet -> dialog = showBottomsheetDialog(changeLogView)
-                Type.Dialog -> dialog = showDialog(changeLogView)
+                is Type.View -> showOnContainer(
+                    parent = type.parent,
+                    view = changeLogView
+                )
+
+                is Type.BottomSheet -> showBottomSheetDialog(
+                    fragmentManager = type.fragmentManager,
+                    view = changeLogView
+                ).also {
+                    dialog = it
+                }
+
+                is Type.Dialog -> showDialog(
+                    fragmentManager = type.fragmentManager,
+                    view = changeLogView
+                ).also {
+                    dialog = it
+                }
             }
         }
     }
@@ -61,7 +75,7 @@ class ChangeLogManager constructor(
      * Show Release Notes only if not shown yet for current application version
      * @author xeinebiu
      */
-    fun showOnce() {
+    suspend fun showOnce() {
         val appVersionCode = getAppVersionCode()
         val lastAppVersionCode = getLastAppVersionCode()
 
@@ -71,37 +85,11 @@ class ChangeLogManager constructor(
         }
     }
 
-    private fun showOnContainer(view: ChangeLogView): View {
-        parentContainer?.addView(view)
-        return view
-    }
-
-    private fun showDialog(view: ChangeLogView): ChangeLogDialog {
-        val dialog = ChangeLogDialogFragment()
-        return showDialog(dialog, dialog, view)
-    }
-
-    private fun showBottomsheetDialog(view: ChangeLogView): ChangeLogDialog {
-        val dialog = ChangeLogBottomSheetDialogFragment()
-        return showDialog(dialog, dialog, view)
-    }
-
-    private fun showDialog(
-        changeLogDialog: ChangeLogDialog,
-        dialog: DialogFragment,
-        view: View
-    ): ChangeLogDialog {
-        changeLogDialog.init(view)
-        dialog.show(activity.supportFragmentManager, null)
-        return changeLogDialog
-    }
-
     private fun getAppVersionCode(): Long {
-        val pInfo: PackageInfo = activity.packageManager.getPackageInfo(activity.packageName, 0)
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-            pInfo.longVersionCode
-        else
-            pInfo.versionCode.toLong()
+        val pInfo: PackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) pInfo.longVersionCode
+        else pInfo.versionCode.toLong()
     }
 
     private fun getLastAppVersionCode(): Long {
@@ -109,76 +97,69 @@ class ChangeLogManager constructor(
         return preferences.getLong(PREFERENCES_KEY_APP_VERSION, 0)
     }
 
+    private fun getSharedPreferences(): SharedPreferences =
+        context.applicationContext.getSharedPreferences(PREFERENCES_GROUP, Context.MODE_PRIVATE)
+
     private fun setLastAppVersionCode(versionCode: Long) {
-        val preferences = getSharedPreferences()
-        with(preferences.edit()) {
+        getSharedPreferences().edit {
             putLong(PREFERENCES_KEY_APP_VERSION, versionCode)
-            apply()
         }
     }
 
-    private fun getSharedPreferences(): SharedPreferences =
-        activity.applicationContext.getSharedPreferences(PREFERENCES_GROUP, Context.MODE_PRIVATE)
+    private fun showBottomSheetDialog(
+        fragmentManager: FragmentManager,
+        view: ChangeLogView
+    ): ChangeLogDialog {
+        val dialog = ChangeLogBottomSheetDialogFragment().also {
+            it.init(view)
+        }
 
-    companion object {
-        private const val PREFERENCES_GROUP = "com.xeinebiu.views.changelog"
-        private const val PREFERENCES_KEY_APP_VERSION = "app.version"
+        dialog.show(fragmentManager, null)
+
+        return dialog
     }
 
-    /**
-     * Display type of [com.xeinebiu.views.changelog.models.ReleaseNote]
-     */
-    enum class Type {
-        View,
-        Dialog,
-        BottomSheet
+    private fun showDialog(
+        fragmentManager: FragmentManager,
+        view: ChangeLogView
+    ): ChangeLogDialog {
+        val dialog = ChangeLogDialogFragment().also {
+            it.init(view)
+        }
+
+        dialog.show(fragmentManager, null)
+
+        return dialog
+    }
+
+    private fun showOnContainer(
+        parent: ViewGroup,
+        view: ChangeLogView
+    ): View {
+        parent.addView(view)
+        return view
     }
 
     class Builder constructor(
-        private val activity: AppCompatActivity,
-        private val releaseNotes: () -> InputStream
+        private val context: Context,
+        private val type: Type,
+        private val releaseNotes: suspend () -> InputStream
     ) {
-        private val changeLogView = ChangeLogView(activity).apply {
+        private val changeLogView = ChangeLogView(context).apply {
             headerLayoutId = R.layout.layout_title
+
             releaseTitleLayoutId = R.layout.layout_release_title
+
             releaseNoteLayoutId = R.layout.layout_release_note
+
             releaseDividerLayoutId = R.layout.layout_release_divider
+
             headerText = "Change Logs"
-        }.also {
-            it.layoutParams =
-                ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-        }
 
-        private var type = Type.Dialog
-        private var parentContainer: ViewGroup? = null
-
-        /**
-         * Display Release Notes on a [com.google.android.material.bottomsheet.BottomSheetDialogFragment]
-         * @author xeinebiu
-         */
-        fun asBottomSheet() = apply {
-            type = Type.BottomSheet
-        }
-
-        /**
-         * Display Release Notes on a [DialogFragment]
-         * @author xeinebiu
-         */
-        fun asDialog() = apply {
-            type = Type.Dialog
-        }
-
-        /**
-         * Display Release Notes on a [ViewGroup]
-         * @author xeinebiu
-         */
-        fun asView(container: ViewGroup) = apply {
-            parentContainer = container
-            type = Type.View
-            return this
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
         }
 
         /**
@@ -241,13 +222,37 @@ class ChangeLogManager constructor(
          * Build the [ChangeLogManager]
          * @author xeinebiu
          */
-        fun build(): ChangeLogManager =
-            ChangeLogManager(
-                activity,
-                changeLogView,
-                releaseNotes,
-                type,
-                parentContainer
-            )
+        fun build() = ChangeLogManager(
+            context = context,
+            changeLogView = changeLogView,
+            releaseNotes = releaseNotes,
+            type = type
+        )
+    }
+
+    /**
+     * Display type of [com.xeinebiu.views.changelog.models.ReleaseNote]
+     */
+    sealed class Type {
+
+        /**
+         * Display [ChangeLogView] inside [parent]
+         */
+        data class View(val parent: ViewGroup) : Type()
+
+        /**
+         * Display [ChangeLogView] as Dialog using [fragmentManager]
+         */
+        data class Dialog(val fragmentManager: FragmentManager) : Type()
+
+        /**
+         * Display [ChangeLogView] as Bottom Sheet using [fragmentManager]
+         */
+        data class BottomSheet(val fragmentManager: FragmentManager) : Type()
+    }
+
+    companion object {
+        private const val PREFERENCES_GROUP = "com.xeinebiu.views.changelog"
+        private const val PREFERENCES_KEY_APP_VERSION = "app.version"
     }
 }
