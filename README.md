@@ -22,7 +22,7 @@ allprojects {
 Add the dependency
 ````groovy
 dependencies {
-    implementation 'com.github.xeinebiu:android_view_changelog:1.0.5'
+    implementation 'com.github.xeinebiu:android_view_changelog:2.0.0'
 }
 ````
 
@@ -31,12 +31,6 @@ dependencies {
 #### Builder
 
 ##### Properties
-> asBottomSheet() - Show Releases on a Bottom Sheet
-
-> asDialog() - Show Releases on a Dialog
-
-> asView(ViewGroup) - Show Releases on a ViewGroup
-
 > withLimit(Int) - Limit amount of Release notes to show
 
 > withFooter(Int) - Display [View] as Footer
@@ -53,8 +47,7 @@ dependencies {
 ----
 Show Release Notes using default options
 ````kotlin
-ChangeLogManager.Builder(context, releaseNotesInputStream)
-                .asDialog()
+ChangeLogManager.Builder(context, type) { changeLogsApi.get() }
                 .build()
                 .show()
 ````
