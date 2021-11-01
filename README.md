@@ -22,7 +22,7 @@ allprojects {
 Add the dependency
 ````groovy
 dependencies {
-    implementation 'com.github.xeinebiu:android_view_changelog:1.0.5'
+    implementation 'com.github.xeinebiu:android_view_changelog:2.0.0'
 }
 ````
 
@@ -31,12 +31,6 @@ dependencies {
 #### Builder
 
 ##### Properties
-> asBottomSheet() - Show Releases on a Bottom Sheet
-
-> asDialog() - Show Releases on a Dialog
-
-> asView(ViewGroup) - Show Releases on a ViewGroup
-
 > withLimit(Int) - Limit amount of Release notes to show
 
 > withFooter(Int) - Display [View] as Footer
@@ -53,8 +47,7 @@ dependencies {
 ----
 Show Release Notes using default options
 ````kotlin
-ChangeLogManager.Builder(context, releaseNotesInputStream)
-                .asDialog()
+ChangeLogManager.Builder(context, type) { changeLogsApi.get() }
                 .build()
                 .show()
 ````
@@ -66,11 +59,12 @@ Use ```showOnce()``` to show the Release Notes only once per version
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+	
         setContentView(R.layout.activity_main)
-        ChangeLogManager.Builder.with(this, getString(R.string.changelogs))
-            .asDialog()
-            .build()
-            .showOnce()
+	
+	ChangeLogManager.Builder(context, type) { changeLogsApi.get() }
+                .build()
+                .showOnce()
     }
 }
 ````
@@ -80,6 +74,13 @@ class MainActivity : AppCompatActivity() {
 #### Supported Formats
 > Plain Text
 ````
+# 2.0.0
+Update dependencies
+Support coroutines
+Code quality improvements
+Replace display type from enum to sealed class
+Use default behavior on bottom sheet
+
 # 1.2.0
 Create the stream only when needed
 Code quality
