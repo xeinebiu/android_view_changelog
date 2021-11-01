@@ -31,6 +31,10 @@ class ChangeLogManager(
 
     private var dialog: ChangeLogDialog? = null
 
+    private val dialogOnCloseCallback: () -> Unit = {
+        dialog = null
+    }
+
     /**
      * Close Release Notes
      * @author xeinebiu
@@ -38,6 +42,8 @@ class ChangeLogManager(
     fun close() {
         if (type is Type.View) (changeLogView.parent as ViewGroup?)?.removeView(changeLogView)
         else dialog?.close()
+
+        dialog = null
     }
 
     /**
@@ -110,9 +116,13 @@ class ChangeLogManager(
         fragmentManager: FragmentManager,
         view: ChangeLogView
     ): ChangeLogDialog {
-        val dialog = ChangeLogBottomSheetDialogFragment().also {
-            it.init(view)
-        }
+        val dialog = ChangeLogBottomSheetDialogFragment()
+            .apply {
+                onClose = dialogOnCloseCallback
+            }
+            .also {
+                it.init(view)
+            }
 
         dialog.show(fragmentManager, null)
 
@@ -123,9 +133,12 @@ class ChangeLogManager(
         fragmentManager: FragmentManager,
         view: ChangeLogView
     ): ChangeLogDialog {
-        val dialog = ChangeLogDialogFragment().also {
-            it.init(view)
-        }
+        val dialog = ChangeLogDialogFragment()
+            .apply {
+                onClose = dialogOnCloseCallback
+            }.also {
+                it.init(view)
+            }
 
         dialog.show(fragmentManager, null)
 

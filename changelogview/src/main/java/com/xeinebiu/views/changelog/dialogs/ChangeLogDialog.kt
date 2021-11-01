@@ -9,6 +9,11 @@ import android.view.View
 interface ChangeLogDialog {
 
     /**
+     * Called when the dialog is closed
+     */
+    var onClose: (() -> Unit)?
+
+    /**
      * [View] to display as Dialog Content
      */
     var childView: View?

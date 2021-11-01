@@ -1,5 +1,6 @@
 package com.xeinebiu.views.changelog.dialogs
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
  * @author xeinebiu
  */
 class ChangeLogBottomSheetDialogFragment : BottomSheetDialogFragment(), ChangeLogDialog {
+
+    override var onClose: (() -> Unit)? = null
 
     override var childView: View? = null
 
@@ -28,4 +31,10 @@ class ChangeLogBottomSheetDialogFragment : BottomSheetDialogFragment(), ChangeLo
      * Close [BottomSheetDialogFragment]
      */
     override fun close(): Unit = dismiss()
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+
+        onClose?.invoke()
+    }
 }

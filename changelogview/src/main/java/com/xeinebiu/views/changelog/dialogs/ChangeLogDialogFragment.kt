@@ -1,5 +1,6 @@
 package com.xeinebiu.views.changelog.dialogs
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,8 @@ import androidx.fragment.app.DialogFragment
  * @author xeinebiu
  */
 class ChangeLogDialogFragment : DialogFragment(), ChangeLogDialog {
+
+    override var onClose: (() -> Unit)? = null
 
     override var childView: View? = null
 
@@ -41,4 +44,10 @@ class ChangeLogDialogFragment : DialogFragment(), ChangeLogDialog {
      * Close [DialogFragment]
      */
     override fun close(): Unit = dismiss()
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+
+        onClose?.invoke()
+    }
 }
