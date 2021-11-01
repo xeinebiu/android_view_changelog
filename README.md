@@ -22,7 +22,7 @@ allprojects {
 Add the dependency
 ````groovy
 dependencies {
-    implementation 'com.github.xeinebiu:android_view_changelog:2.0.0'
+    implementation 'com.github.xeinebiu:android_view_changelog:2.1.0'
 }
 ````
 
@@ -74,6 +74,9 @@ class MainActivity : AppCompatActivity() {
 #### Supported Formats
 > Plain Text
 ````
+# 2.1.0
+Update dependencies
+
 # 2.0.0
 Update dependencies
 Support coroutines
