@@ -86,8 +86,8 @@ class ChangeLogManager(
         val lastAppVersionCode = getLastAppVersionCode()
 
         if (appVersionCode > lastAppVersionCode) {
-            setLastAppVersionCode(appVersionCode)
             show()
+            setLastAppVersionCode(appVersionCode)
         }
     }
 
